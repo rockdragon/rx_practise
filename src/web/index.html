@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Rx lab</title>
+    <style>
+        body {
+            margin:20px 40px;
+        }
+        #main {
+            margin:200px 600px;
+        }
+    </style>
+</head>
+<body>
+    <div id="main">
+        <textarea id="text" name="text"></textarea>
+    </div>
+</body>
+<script src="rx.all.js"></script>
+<script>
+    function print() {
+        var args = [].slice.call(arguments)
+        document.getElementById('text').value = args.join()
+    }
+    window.addEventListener('load', function() {
+        var allMoves = Rx.Observable.fromEvent(document, 'mousemove')
+        allMoves.subscribe(function(point) {
+            print(point.x, point.y)
+        })
+    })
+</script>
+</html>

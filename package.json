@@ -1,4 +1,8 @@
 {
   "name": "rx-practise",
-  "version": "0.0.1"
+  "version": "0.0.1",
+  "dependencies": {
+    "ramda": "^0.21.0",
+    "rx": "^4.1.0"
+  }
 }
