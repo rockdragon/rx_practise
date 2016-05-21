@@ -2,6 +2,7 @@
   "name": "rx-practise",
   "version": "0.0.1",
   "dependencies": {
+    "ping": "^0.1.10",
     "ramda": "^0.21.0",
     "rx": "^4.1.0"
   }
