@@ -1,15 +1,20 @@
 var Rx = require('rx')
-var R = require('ramda')
 
-var a = Rx.Observable.interval(200).map((i) => {
-    return 'A' + i
+var evenTicks = 0
+
+function updateTicks (i) {
+  if (i % 2 === 0)
+    evenTicks += 1
+  return evenTicks
+}
+
+var ticksObservable = Rx.Observable
+  .interval(1000)
+  .map(updateTicks)
+
+ticksObservable.subscribe(function() {
+  console.log('Subscriber 1 - evenTicks: ' + evenTicks + ' so far')
 })
-
-var b = Rx.Observable.interval(100).map((i) => {
-    return 'B' + i
+ticksObservable.subscribe(function() {
+  console.log('Subscriber 2 - evenTicks: ' + evenTicks + ' so far')
 })
-
-Rx.Observable.merge(a, b).filter(x => R.contains('A', x))
-    .subscribe((x) => {
-        console.log(x)
-    })
