@@ -10,11 +10,11 @@ function getPage(url) {
 }
 
 function setContent(content) {
-  document.querySelector('#content').innerHTML = content
+  document.querySelector('#content').value = content
 }
 
 var page = getPage('/earthquake/index.html')
 page.subscribe(
-  res => setContent(encodeURIComponent(res.response)),
+  res => setContent(res.response),
   err => setContent(err)
 )
