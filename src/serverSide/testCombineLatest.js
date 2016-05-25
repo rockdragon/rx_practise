@@ -1,6 +1,6 @@
 var Rx = require('rx')
 var SPEED = 1000
-var AMOUNT = 100
+var AMOUNT = 4
 
 var source1 = Rx.Observable.interval(100)
   .map(i => 'First: ' + i)
@@ -12,8 +12,9 @@ var source = Rx.Observable.combineLatest(
   source1,
   source2
   )
-  .take(AMOUNT)
   .sample(SPEED)
+  .take(AMOUNT)
+
 
 source.subscribe(
   x => console.log('Next %s', JSON.stringify(x)),
