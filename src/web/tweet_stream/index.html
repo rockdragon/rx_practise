@@ -7,12 +7,6 @@
     <script src="../rx.dom.js"></script>
 </head>
 <body>
-<script>
-    function initialize() {
-        var socket = Rx.DOM.fromWebSocket('ws://127.0.0.1:8888')
-        socket.subscribe(function(x) { console.log(x.data); })
-    }
-    Rx.DOM.ready().subscribe(initialize)
-</script>
+<script src="./index.js"></script>
 </body>
 </html>
