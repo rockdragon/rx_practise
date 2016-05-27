@@ -1,0 +1,9 @@
+{
+  "name": "tweet-stream",
+  "version": "0.0.1",
+  "dependencies": {
+    "rx": "^4.1.0",
+    "twit": "^2.2.4",
+    "ws": "^1.1.0"
+  }
+}

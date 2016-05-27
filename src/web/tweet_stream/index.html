@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Streaming earthquake</title>
+    <script src="../rx.all.js"></script>
+    <script src="../rx.dom.js"></script>
+</head>
+<body>
+<script>
+    function initialize() {
+        var socket = Rx.DOM.fromWebSocket('ws://127.0.0.1:8888')
+        socket.subscribe(function(x) { console.log(x.data); })
+    }
+    Rx.DOM.ready().subscribe(initialize)
+</script>
+</body>
+</html>
