@@ -17,7 +17,8 @@ var quakes = scheduler.createHotObservable(
 )
 
 function quakeBatches(scheduler, quakes) {
-  return quakes.pluck('properties')
+  return quakes
+    .pluck('properties')
     .bufferWithTime(500, null, scheduler || null)
     .filter(function (rows) {
       return rows.length > 0;

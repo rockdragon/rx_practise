@@ -1,0 +1,17 @@
+{
+  "name": "cycle-practise",
+  "version": "0.0.1",
+  "scripts": {
+    "start": "npm run build && http-server",
+    "build": "`npm bin`/browserify index.js -t babelify --outfile bundle.js"
+  },
+  "devDependencies": {
+    "babelify": "^7.3.0",
+    "browserify": "^13.0.1"
+  },
+  "dependencies": {
+    "@cycle/core": "^6.0.3",
+    "@cycle/dom": "^9.4.0",
+    "rx": "^4.1.0"
+  }
+}
