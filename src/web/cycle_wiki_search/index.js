@@ -1,5 +1,6 @@
-var Cycle = require('@cycle/core');
-var CycleDOM = require('@cycle/dom');
+import Cycle from '@cycle/core';
+import {makeDOMDriver, hJSX} from '@cycle/dom';
+
 var Rx = require('rx');
 
 var MAIN_URL = 'https://en.wikipedia.org';
@@ -8,26 +9,27 @@ var API_URL = MAIN_URL + '/w/api.php?action=query&list=search&format=json&srsear
 
 function main(responses) {
   return {
-    DOM: Rx.Observable.just(CycleDOM.h('span', 'Hi there!'))
+    DOM: Rx.Observable.just(
+      <span>hi, there!</span>
+    )
   }
 }
 
 var drivers = {
-  DOM: CycleDOM.makeDOMDriver('#container')
+  DOM: makeDOMDriver('#container')
 };
 
-function vtreeElements(results) {
-  var h = CycleDOM.h;
-  return h('div', [
-    h('h1', 'Wikipedia Search '),
-    h('input', {className: 'search-field', attributes: {type: 'text'}}),
-    h('hr'),
-    h('div', results.map(function(result) {
-      return h('div', [
-        h('a', { href: WIKI_URL + result.title }, result.title)
-      ]);
-    }))
-  ]);
+function vtreeElementsJSX(results) {
+  results = results.map(function(result) {
+    var link = WIKI_URL + result.title;
+    return <div><a href={link}>{result.title}</a></div>
+  });
+  return <div>
+    <h1>Wikipedia Search</h1>
+    <input className="search-field" type="text" />
+    <hr/>
+    <div>{results}</div>
+  </div>;
 }
 
 function searchRequest(responses) {
