@@ -12,16 +12,14 @@ function get(id) {
 
 function main(drivers) {
   return {
-    DOM: drivers.DOM.select('input[type="radio"]').events('click')
+    DOM: drivers.DOM.select('input#search').events('input')
+      .debounce(200)
       .map(ev => ev.target.value)
       .startWith('')
-      .map(selected =>
+      .map(text =>
         <div>
-          <form>
-            <input type="radio" name="radios" value="1"/> 1
-            <input type="radio" name="radios" value="2"/> 2
-          </form>
-          <p>{selected}</p>
+          <input type="text" id="search" />
+          <p>you've typed: {text}</p>
         </div>
       )
   }
