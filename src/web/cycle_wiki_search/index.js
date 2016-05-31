@@ -2,6 +2,7 @@ import Cycle from '@cycle/core'
 import CycleJSONP from '@cycle/jsonp'
 import {makeDOMDriver, hJSX, div, input, p} from '@cycle/dom'
 import Rx from 'rx'
+import RxDOM from 'rx-dom'
 import searchBox from './searchbox'
 
 const MAIN_URL = 'https://en.wikipedia.org'
@@ -9,6 +10,20 @@ const WIKI_URL = MAIN_URL + '/wiki/'
 const API_URL = MAIN_URL + '/w/api.php?action=query&list=search&format=json&srsearch='
 
 function main(responses) {
+  const source1 = Rx.DOM.getJSON('/data/depart.json')
+  const source2 = Rx.DOM.getJSON('/data/area.json')
+
+  function getResults(amount) {
+    return source1.merge(source2)
+      .flatMap(array => {
+        return Rx.Observable.from(array)
+      })
+      .pluck('value')
+      .take(amount)
+  }
+
+  getResults(5).subscribe(x => console.log(x))
+
   const wpSearchBox = searchBox({
     DOM: responses.DOM,
     props$: Rx.Observable.just({
