@@ -27,7 +27,8 @@ Rx.Observable
   .merge(...tasks)
   .subscribe(
     host => console.log(`pong: ${host}`),
-    err => console.error(err)
+    err => console.error(err),
+    _ => console.log('DONE.')
   )
 
 
