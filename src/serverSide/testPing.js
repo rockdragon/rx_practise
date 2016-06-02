@@ -1,6 +1,6 @@
 var Rx = require('rx')
 var R = require('ramda')
-var pingRaw = require('ping')
+var pingCommand = require('ping')
 
 var config = {
   timeout: 10,
@@ -8,7 +8,7 @@ var config = {
 }
 function promisablePing(host) {
   return new Promise((resolve, reject) => {
-    pingRaw.sys.probe(host
+    pingCommand.sys.probe(host
       , isAlive => isAlive ? resolve(host) : reject(`${host}: unreachable.`)
       , config)
   })
@@ -22,12 +22,13 @@ function ping(host) {
   })
 }
 
-var tasks = R.range(1, 199).map(i => ping(`192.168.50.${i}`))
+var tasks = R.range(2, 254).map(i => ping(`192.168.50.${i}`))
 Rx.Observable
   .merge(...tasks)
   .subscribe(
     host => console.log(`pong: ${host}`),
-    err => console.error(err)
+    err => console.error(err),
+    _ => console.log('DONE.')
   )
 
 
