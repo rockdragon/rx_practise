@@ -12,6 +12,7 @@
   "dependencies": {
     "@cycle/core": "^6.0.3",
     "@cycle/dom": "^9.4.0",
+    "@cycle/http": "^8.2.2",
     "@cycle/jsonp": "^5.0.1",
     "rx": "^4.1.0",
     "rx-dom": "^7.0.3"

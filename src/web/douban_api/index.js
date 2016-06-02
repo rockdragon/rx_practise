@@ -1,14 +1,46 @@
 import Cycle from '@cycle/core'
 import CycleJSONP from '@cycle/jsonp'
-import {makeDOMDriver, hJSX, div, input, p} from '@cycle/dom'
+import {makeDOMDriver, hJSX} from '@cycle/dom'
+import {makeHTTPDriver} from '@cycle/http'
 import Rx from 'rx'
-import RxDOM from 'rx-dom'
 
-function main(responses) {
-
+function model(input$) {
+  return input$
+}
+function view(state$) {
+  return state$.map(value =>
+    <div>
+      <input type="text"/>
+      <input type="button" value="search"/>
+      <span>{value}</span>
+    </div>
+  )
+}
+function intent(sources$) {
+    const inputs$ = sources$.DOM.select('input[type="text"]')
+    .events('input')
+    .map(ev => ev.target.value)
+  const clicks$ =  sources$.DOM.select('input[type="text"]')
+    .events('click')
+    .map(ev => 1)
+  return Rx.Observable.combineLatest(
+    inputs$.startWith('')
+    , clicks$.startWith('')
+    , (inputs, clicks) => {
+      console.log(inputs, clicks)
+      return {inputs, clicks}
+    }
+  )
 }
 
-Cycle.run(main, {
+function main(responses$) {
+  return {
+    DOM: view(model(intent(responses$)))
+  }
+}
+
+const driver = {
   DOM: makeDOMDriver('#container'),
-  JSONP: CycleJSONP.makeJSONPDriver()
-})
+}
+
+Cycle.run(main, driver)
