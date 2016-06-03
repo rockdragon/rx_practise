@@ -4,10 +4,14 @@ import {makeDOMDriver, hJSX} from '@cycle/dom'
 import {makeHTTPDriver} from '@cycle/http'
 import Rx from 'rx'
 
+const HELLO_URL = 'http://www.baidu.com/'
+
 function model(actions$) {
   return Rx.Observable.combineLatest(
     actions$.inputs$.startWith(''),
     actions$.clicks$.startWith(false).scan((prev, next) => {
+      let request$ = Rx.Observable.just({url: HELLO_URL})
+
       return !prev
     }),
     (inputs, clicks) => {
