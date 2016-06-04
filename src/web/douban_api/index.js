@@ -4,31 +4,40 @@ import {makeDOMDriver, hJSX} from '@cycle/dom'
 import {makeHTTPDriver} from '@cycle/http'
 import Rx from 'rx'
 
-const HELLO_URL = 'http://www.baidu.com/'
+const HELLO_URL = 'https://www.baidu.com/s?wd='
 
 function model(actions$) {
-  return Rx.Observable.combineLatest(
-    actions$.inputs$.startWith(''),
-    actions$.clicks$.startWith(false).scan((prev, next) => {
-      let request$ = Rx.Observable.just({url: HELLO_URL})
-
-      return !prev
-    }),
-    (inputs, clicks) => {
-      return {inputs, clicks}
-    }
-  )
+  return Rx.Observable
+    .merge(actions$.inputs$, actions$.clicks$)
+    .startWith({
+      keyword: '', request: {
+        url: HELLO_URL,
+        method: 'GET'
+      }
+    })
+    .scan((prev, next) => {
+      const state = Object.assign({}, prev)
+      if (typeof next === 'string') {
+        state.keyword = next
+        state.request = undefined
+      }
+      else if (typeof next === 'function')
+        state.request = next(state.keyword)
+      return state
+    })
 }
 function view(state$) {
-  return state$.map((value, index) => {
-    console.log(value, index)
-      return <div>
-        <input type="text"/>
-        <input type="button" value="search"/>
-        <br/>
-      </div>
-    }
-  )
+  return {
+    DOM: state$.map((value) => {
+        return <div>
+          <input type="text"/>
+          <input type="button" value="search"/>
+          <br/>
+        </div>
+      }
+    ),
+    HTTP: state$.map(value => value.request)
+  }
 }
 function intent(sources$) {
   return {
@@ -37,13 +46,17 @@ function intent(sources$) {
       .map(ev => ev.target.value),
     clicks$: sources$.DOM.select('input[type="button"]')
       .events('click')
+      .map(_ => keyword => {
+        return {
+          url: HELLO_URL + keyword,
+          method: 'GET'
+        }
+      })
   }
 }
 
 function main(responses$) {
-  return {
-    DOM: view(model(intent(responses$)))
-  }
+  return view(model(intent(responses$)))
 }
 
 const driver = {
