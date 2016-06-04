@@ -6,93 +6,69 @@ import {makeJSONPDriver} from '@cycle/jsonp'
 import Rx from 'rx'
 
 const GITHUB_SEARCH_URL = 'https://api.github.com/search/repositories?q='
+const buffer = {}
 
-function model(actions$) {
-  return Rx.Observable
-    .merge(actions$.text$, actions$.button$, actions$.http$)
+function main(responses$) {
+  const search$ = responses$.DOM.select('input[type="button"]')
+    .events('click')
+    .map(() => {
+      return buffer.keyword ? {
+        url: GITHUB_SEARCH_URL + encodeURI(buffer.keyword),
+        method: 'GET'
+      } : null
+    })
+    .catch(err => Rx.Observable.just(err))
+
+  const text$ = responses$.DOM.select('input[type="text"]')
+    .events('input')
+    .map(e => {
+      return {keyword: e.target.value}
+    })
+
+  const http$ = responses$.HTTP
+    .filter(res$ => {
+      return res$.request.url && res$.request.url.startsWith(GITHUB_SEARCH_URL)
+    })
+    .mergeAll()
+    .map(res => {
+      return {response: res.text}
+    })
+
+  const dom$ = Rx.Observable.merge(text$, http$)
     .startWith({
       keyword: '',
-      request: null,
       response: 'Loading...'
     })
     .scan((prev, next) => {
-      console.log('trigged scan...', next)
       const state = Object.assign({}, prev)
-      if (typeof next === 'function') {
-        console.log('keyword', state.keyword)
-        state.request = next(state.keyword)
-      } else if (next.keyword) {
-        state.keyword = next.keyword
-        state.request = null
+      if (next.keyword) {
+        buffer.keyword = state.keyword = next.keyword
       } else if (next.response) {
-        state.request = null
         state.response = next.response
       }
-
       return state
     })
-}
-function view(state$) {
-  return {
-    DOM: state$
-      .filter(state => {
-        console.log('DOM')
-        return state.request === null
-      })
-      .map(state => {
-          return <div>
-            <input type="text"/>
-            <input type="button" value="search"/>
-            <br/>
+    .map(state => {
+        return <div>
+          <input type="text"/>
+          <input type="button" value="search"/>
+          <br/>
           <span>
             {state.response}
           </span>
-          </div>
-        }
-      ),
-    HTTP: state$
-      .filter(state => {
-        console.log('HTTP')
-        return state.request !== null
-      })
-      .map(state => {
-        return {
-          url: state.request,
-          method: 'GET'
-        }
-      })
-      .take(1)
-  }
-}
-function intent(responses$) {
-  return {
-    text$: responses$.DOM.select('input[type="text"]')
-      .events('input')
-      .map(e => {
-        return {keyword: e.target.value}
-      }),
-    button$: responses$.DOM.select('input[type="button"]')
-      .events('click')
-      .map(_ => keyword => GITHUB_SEARCH_URL + encodeURI(keyword)),
-    http$: responses$.HTTP
-      .filter(res$ => {
-        return res$.request.url && res$.request.url.startsWith(GITHUB_SEARCH_URL)
-      })
-      .mergeAll()
-      .map(res => {
-        return {response: res.text}
-      })
-  }
-}
+        </div>
+      }
+    )
 
-function main(responses$) {
-  return view(model(intent(responses$)))
+  return {
+    DOM: dom$,
+    HTTP: search$
+  }
 }
 
 const driver = {
   DOM: makeDOMDriver('#container'),
   HTTP: makeHTTPDriver(),
-  //JSONP: makeJSONPDriver(),
 }
 
 Cycle.run(main, driver)
