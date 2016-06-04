@@ -33,7 +33,6 @@ function model(actions$) {
     })
 }
 function view(state$) {
-  console.log('---->>>>', state$.pluck('request'))
   return {
     DOM: state$
       .filter(state => {
