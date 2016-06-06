@@ -21,7 +21,7 @@ function main(responses$) {
     })
 
   const http$ = Rx.Observable.merge(text$, search$)
-    .scan((prev, next) => {
+    .reduce((prev, next) => {
       const state = Object.assign({}, prev, next)
       if(next.url)
         state.url = next.url + state.keyword
