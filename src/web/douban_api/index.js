@@ -20,18 +20,12 @@ function main(responses$) {
       return {keyword: e.target.value}
     })
 
-  const http$ = Rx.Observable.merge(text$, search$)
-    .reduce((prev, next) => {
-      const state = Object.assign({}, prev, next)
-      if(next.url)
-        state.url = next.url + state.keyword
-      else if(next.keyword)
-        state.url = null
-      return state
+  const http$ = search$.withLatestFrom(text$, (search, text)=> {
+      return search.url + text.keyword
     })
     .map(state => {
       return {
-        url: state.url,
+        url: state,
         method: 'GET'
       }
     })
