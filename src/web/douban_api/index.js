@@ -6,18 +6,13 @@ import {makeJSONPDriver} from '@cycle/jsonp'
 import Rx from 'rx'
 
 const GITHUB_SEARCH_URL = 'https://api.github.com/search/repositories?q='
-const buffer = {}
 
 function main(responses$) {
   const search$ = responses$.DOM.select('input[type="button"]')
     .events('click')
-    .map(() => {
-      return buffer.keyword ? {
-        url: GITHUB_SEARCH_URL + encodeURI(buffer.keyword),
-        method: 'GET'
-      } : null
+    .map(_ => {
+      return {url: GITHUB_SEARCH_URL}
     })
-    .catch(err => Rx.Observable.just(err))
 
   const text$ = responses$.DOM.select('input[type="text"]')
     .events('input')
@@ -25,36 +20,36 @@ function main(responses$) {
       return {keyword: e.target.value}
     })
 
-  const http$ = responses$.HTTP
+  const http$ = Rx.Observable.merge(text$, search$)
+    .scan((prev, next) => {
+      const state = Object.assign({}, prev, next)
+      if(next.url)
+        state.url = next.url + state.keyword
+      else if(next.keyword)
+        state.url = null
+      return state
+    })
+    .map(state => {
+      return {
+        url: state.url,
+        method: 'GET'
+      }
+    })
+
+  const dom$ = responses$.HTTP
     .filter(res$ => {
       return res$.request.url && res$.request.url.startsWith(GITHUB_SEARCH_URL)
     })
     .mergeAll()
-    .map(res => {
-      return {response: res.text}
-    })
-
-  const dom$ = Rx.Observable.merge(text$, http$)
-    .startWith({
-      keyword: '',
-      response: 'Loading...'
-    })
-    .scan((prev, next) => {
-      const state = Object.assign({}, prev)
-      if (next.keyword) {
-        buffer.keyword = state.keyword = next.keyword
-      } else if (next.response) {
-        state.response = next.response
-      }
-      return state
-    })
-    .map(state => {
+    .map(res => res.text)
+    .startWith('Loading...')
+    .map(JSON => {
         return <div>
           <input type="text"/>
           <input type="button" value="search"/>
           <br/>
           <span>
-            {state.response}
+            {JSON}
           </span>
         </div>
       }
@@ -62,7 +57,7 @@ function main(responses$) {
 
   return {
     DOM: dom$,
-    HTTP: search$
+    HTTP: http$
   }
 }
 
