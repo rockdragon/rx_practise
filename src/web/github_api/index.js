@@ -38,7 +38,6 @@ function main(responses$) {
     .map(res => JSON.parse(res.text))
     .startWith({loading: true})
     .map(JSON => {
-        console.log(JSON.label)
         return <div>
           <input type="text"/>
           <input type="button" value="search"/>
