@@ -13,6 +13,6 @@
     "@cycle/core": "^6.0.3",
     "@cycle/dom": "^9.4.0",
     "@cycle/http": "^8.2.2",
-    "@cycle/jsonp": "^5.0.1",
+    "@cycle/jsonp": "^5.0.1"
   }
 }

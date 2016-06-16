@@ -7,19 +7,14 @@ const GITHUB_SEARCH_URL = 'https://api.github.com/search/repositories?q='
 function main(responses$) {
   const search$ = responses$.DOM.select('input[type="button"]')
     .events('click')
-    .map(_ => { url: GITHUB_SEARCH_URL })
+    .map(_ => { return { url: GITHUB_SEARCH_URL } })
 
   const text$ = responses$.DOM.select('input[type="text"]')
     .events('input')
-    .map(e => { keyword: e.target.value })
+    .map(e => { return { keyword: e.target.value } })
 
   const http$ = search$.withLatestFrom(text$, (search, text)=> search.url + text.keyword)
-    .map(state => {
-      return {
-        url: state,
-        method: 'GET'
-      }
-    })
+    .map(state => { return { url: state, method: 'GET' } })
 
   const dom$ = responses$.HTTP
     .filter(res$ => res$.request.url && res$.request.url.startsWith(GITHUB_SEARCH_URL))
@@ -39,7 +34,7 @@ function main(responses$) {
               JSON.items && JSON.items.map(repo =>
                 <div>
                   <span>repo.full_name</span>
-                  <a href={repo.html_url}>{repo.html_url}</a>
+                  <a href={ repo.html_url }>{ repo.html_url }</a>
                 </div>
               )
             }
