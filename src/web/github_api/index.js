@@ -1,27 +1,19 @@
 import Cycle from '@cycle/core'
-import CycleJSONP from '@cycle/jsonp'
 import { makeDOMDriver, hJSX } from '@cycle/dom'
-import {makeHTTPDriver } from '@cycle/http'
-import {makeJSONPDriver} from '@cycle/jsonp'
+import { makeHTTPDriver } from '@cycle/http'
 
 const GITHUB_SEARCH_URL = 'https://api.github.com/search/repositories?q='
 
 function main(responses$) {
   const search$ = responses$.DOM.select('input[type="button"]')
     .events('click')
-    .map(_ => {
-      return {url: GITHUB_SEARCH_URL}
-    })
+    .map(_ => { url: GITHUB_SEARCH_URL })
 
   const text$ = responses$.DOM.select('input[type="text"]')
     .events('input')
-    .map(e => {
-      return {keyword: e.target.value}
-    })
+    .map(e => { keyword: e.target.value })
 
-  const http$ = search$.withLatestFrom(text$, (search, text)=> {
-      return search.url + text.keyword
-    })
+  const http$ = search$.withLatestFrom(text$, (search, text)=> search.url + text.keyword)
     .map(state => {
       return {
         url: state,
@@ -30,12 +22,10 @@ function main(responses$) {
     })
 
   const dom$ = responses$.HTTP
-    .filter(res$ => {
-      return res$.request.url && res$.request.url.startsWith(GITHUB_SEARCH_URL)
-    })
+    .filter(res$ => res$.request.url && res$.request.url.startsWith(GITHUB_SEARCH_URL))
     .mergeAll()
     .map(res => JSON.parse(res.text))
-    .startWith({loading: true})
+    .startWith({ loading: true })
     .map(JSON => {
         return <div>
           <input type="text"/>
@@ -60,7 +50,7 @@ function main(responses$) {
 
   return {
     DOM: dom$,
-    HTTP: http$
+    HTTP: http$,
   }
 }
 
