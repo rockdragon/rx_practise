@@ -1,0 +1,7 @@
+public/*
+test/*
+webpack/*
+node_modules/*
+src/js/server/app.js
+src/js/shared/lib/createStore.js
+src/js/test/*

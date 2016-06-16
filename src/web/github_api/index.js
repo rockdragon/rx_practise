@@ -1,9 +1,8 @@
 import Cycle from '@cycle/core'
 import CycleJSONP from '@cycle/jsonp'
-import {makeDOMDriver, hJSX} from '@cycle/dom'
-import {makeHTTPDriver} from '@cycle/http'
+import { makeDOMDriver, hJSX } from '@cycle/dom'
+import {makeHTTPDriver } from '@cycle/http'
 import {makeJSONPDriver} from '@cycle/jsonp'
-import Rx from 'rx'
 
 const GITHUB_SEARCH_URL = 'https://api.github.com/search/repositories?q='
 
