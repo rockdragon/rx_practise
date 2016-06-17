@@ -1,25 +1,29 @@
-var Rx = require('rx')
+const Rx = require('rx')
+const print = console.log
 
-function NumberObject(n) {
+function RuralSubject(n) {
   this.n = n
   this.subject = new Rx.Subject()
 }
-NumberObject.prototype.subject = function getter() {
+RuralSubject.prototype.subject = function getter() {
   return this.subject
 }
 
-NumberObject.prototype.set = function setter(n) {
+RuralSubject.prototype.set = function setter(n) {
   this.n = n
   this.subject.onNext(n)
 }
 
-var numberObj = new NumberObject(10)
-numberObj.subject.subscribe(x => console.log('x changed:', x))
+const numberObj = new RuralSubject('Hola')
+numberObj.subject.subscribe(
+  x => print('peasant is comming:', x)
+)
 
-numberObj.set(20)
-numberObj.set(30)
-numberObj.set(40)
-numberObj.set(50)
+numberObj.set('Buenos días')
+numberObj.set('Buenas tardes')
+numberObj.set('Buenas noches')
+numberObj.set('Hasta luego')
+
 
 
 
