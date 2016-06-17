@@ -1,13 +1,25 @@
 var Rx = require('rx')
 
-var observable = new Rx.Subject()
+function NumberObject(n) {
+  this.n = n
+  this.subject = new Rx.Subject()
+}
+NumberObject.prototype.subject = function getter() {
+  return this.subject
+}
 
-observable.subscribe(
-  res => console.log(res)
-)
-observable.onNext('subscribe')
-observable.onNext('by')
-observable.dispose()
-if(!observable.isDisposed)
-  observable.onNext('self')
+NumberObject.prototype.set = function setter(n) {
+  this.n = n
+  this.subject.onNext(n)
+}
+
+var numberObj = new NumberObject(10)
+numberObj.subject.subscribe(x => console.log('x changed:', x))
+
+numberObj.set(20)
+numberObj.set(30)
+numberObj.set(40)
+numberObj.set(50)
+
+
 
